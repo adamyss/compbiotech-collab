@@ -1,0 +1,12 @@
+body {
+ 
+    background-image: url("waterone.jpg");
+}
+h1{
+    color: rgb(28, 1, 100);  
+    font-size: 40px;
+}
+p1{
+    color:rgb(25, 0, 95);
+    font-size: 25px;
+}
