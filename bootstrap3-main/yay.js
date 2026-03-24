@@ -4,8 +4,9 @@
 		OK: 'OK',
 		NEEDS_REPLACEMENT: 'Needs Replacement'
 	});
-	let status = FilterStatus.OK;
+	let status = FilterStatus.UNKNOWN;
 	const notifications = [];
+	const picoUrl = 'http://192.168.1.100/status'; // Replace with your Raspberry Pi Pico's IP address and endpoint
 
 	function renderNotifications(){
 		const list = document.getElementById('notification-list');
@@ -37,12 +38,43 @@
 		renderNotifications();
 	}
 
+	function fetchFilterStatus(){
+		fetch(picoUrl)
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then(data => {
+				const newStatus = data.status;
+				if (newStatus !== status) {
+					status = newStatus;
+					const statusElement = document.getElementById('filter-status');
+					if(statusElement) statusElement.textContent = status;
+					if (status === FilterStatus.NEEDS_REPLACEMENT) {
+						addNotification("Filter needs replacement!");
+					}
+				}
+			})
+			.catch(error => {
+				console.error('Error fetching filter status:', error);
+				// Optionally set status to unknown on error
+				if (status !== FilterStatus.UNKNOWN) {
+					status = FilterStatus.UNKNOWN;
+					const statusElement = document.getElementById('filter-status');
+					if(statusElement) statusElement.textContent = status;
+				}
+			});
+	}
+
 	document.addEventListener('DOMContentLoaded', function(){
 		const top = document.getElementById('filter-status');
-		const nav = document.getElementById('nav-filter-status');
 		if(top) top.textContent = status;
-		if(nav) nav.textContent = status;
 		renderNotifications();
+		// Fetch status immediately and then every 30 seconds
+		fetchFilterStatus();
+		setInterval(fetchFilterStatus, 30000);
 	});
     addNotification("Your filter will need replacement soon");
 	window.addNotification = addNotification;
