@@ -6,7 +6,7 @@
 	});
 	let status = FilterStatus.UNKNOWN;
 	const notifications = [];
-	const picoUrl = 'http://192.168.1.100/status'; // Replace with your Raspberry Pi Pico's IP address and endpoint
+	const picoUrl = 'http://192.168.1.100/status';
 
 	function renderNotifications(){
 		const list = document.getElementById('notification-list');
@@ -72,7 +72,6 @@
 		const top = document.getElementById('filter-status');
 		if(top) top.textContent = status;
 		renderNotifications();
-		// Fetch status immediately and then every 30 seconds
 		fetchFilterStatus();
 		setInterval(fetchFilterStatus, 30000);
 	});
